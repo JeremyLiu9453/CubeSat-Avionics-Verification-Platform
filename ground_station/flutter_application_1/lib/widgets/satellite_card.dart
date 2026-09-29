@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../models/satellite.dart';
 import '../theme/app_theme.dart';
@@ -13,196 +14,141 @@ class SatelliteCard extends StatelessWidget {
     this.onTap,
   });
 
-  Color _getStateColor() {
-    switch (satellite.systemState) {
-      case SystemState.nominal:
-        return AppColors.success;
-
-      case SystemState.warning:
-        return AppColors.warning;
-
-      case SystemState.fault:
-        return AppColors.fault;
-
-      case SystemState.recovery:
-        return AppColors.accentBlue;
-
-      case SystemState.boot:
-        return AppColors.textGray;
-    }
-  }
-
-  String _getStateText() {
-    return satellite.systemState.name.toUpperCase();
-  }
+  bool get _isOnline => satellite.status == SatelliteStatus.online;
 
   @override
   Widget build(BuildContext context) {
-    final stateColor = _getStateColor();
+    final borderColor = _isOnline
+        ? AppColors.success.withValues(alpha: 0.90)
+        : AppColors.offlineBorder;
+    final backgroundColor =
+        _isOnline ? AppColors.onlineCard : AppColors.offlineCard;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          height: 182,
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.cardBackground,
-            borderRadius: BorderRadius.circular(22),
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: stateColor.withValues(alpha: 0.35),
+              color: borderColor,
+              width: 1.5,
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.spaceNavy,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.satellite_alt_rounded,
-                      color: AppColors.pureWhite,
-                    ),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          satellite.id,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+              SizedBox(
+                height: 90,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Container(
+                        width: 42.67,
+                        height: 46.67,
+                        decoration: BoxDecoration(
+                          color: _isOnline
+                              ? const Color(0xFF112B21)
+                              : const Color(0xFF0F1B25),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          satellite.name,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textGray,
-                          ),
+                        child: Icon(
+                          Icons.view_in_ar_rounded,
+                          size: 27,
+                          color: _isOnline
+                              ? AppColors.success
+                              : AppColors.accentBlue,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-
-                  _StatusBadge(
-                    online:
-                        satellite.status == SatelliteStatus.online,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // System State
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: stateColor,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: stateColor.withValues(alpha: 0.55),
-                          blurRadius: 8,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              satellite.id,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.rajdhani(
+                                color: AppColors.primaryText,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                                height: 1,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              satellite.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.rajdhani(
+                                color: AppColors.textGray,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                height: 1,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _isOnline
+                                  ? 'Last contact 2 sec ago'
+                                  : 'Last contact 3 hour ago',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.rajdhani(
+                                color: AppColors.textGray,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                height: 1,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  Text(
-                    _getStateText(),
-                    style: TextStyle(
-                      color: stateColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.2,
+                    const SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: _StatusBadge(online: _isOnline),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-
-              const SizedBox(height: 22),
-
-              // Telemetry
-              Row(
-                children: [
-                  Expanded(
-                    child: _TelemetryValue(
-                      value:
-                          '${satellite.busVoltage.toStringAsFixed(2)} V',
-                      label: 'BUS VOLTAGE',
-                    ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _TelemetryValue(
+                        value: _isOnline
+                            ? '${satellite.busVoltage.toStringAsFixed(2)} V'
+                            : '-- V',
+                        label: 'Bus Voltage',
+                        online: _isOnline,
+                        highlight: true,
+                      ),
+                      const SizedBox(width: 40),
+                      _TelemetryValue(
+                        value: _isOnline
+                            ? '${satellite.temperature.toStringAsFixed(1)} °C'
+                            : '-- °C',
+                        label: 'Temperature',
+                        online: _isOnline,
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: _TelemetryValue(
-                      value:
-                          '${satellite.temperature.toStringAsFixed(1)} °C',
-                      label: 'OBC TEMP',
-                    ),
-                  ),
-                  Expanded(
-                    child: _TelemetryValue(
-                      value: '${satellite.rssi} dBm',
-                      label: 'RSSI',
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 22),
-
-              const Divider(
-                color: Color(0xFF1B293A),
-              ),
-
-              const SizedBox(height: 10),
-
-              Row(
-                children: [
-                  const Icon(
-                    Icons.schedule_rounded,
-                    size: 14,
-                    color: AppColors.textGray,
-                  ),
-
-                  const SizedBox(width: 7),
-
-                  Text(
-                    satellite.status == SatelliteStatus.online
-                        ? 'Last contact: just now'
-                        : 'Last contact unavailable',
-                    style: const TextStyle(
-                      color: AppColors.textGray,
-                      fontSize: 11,
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 13,
-                    color: AppColors.textGray,
-                  ),
-                ],
+                ),
               ),
             ],
           ),
@@ -215,31 +161,44 @@ class SatelliteCard extends StatelessWidget {
 class _TelemetryValue extends StatelessWidget {
   final String value;
   final String label;
+  final bool online;
+  final bool highlight;
 
   const _TelemetryValue({
     required this.value,
     required this.label,
+    required this.online,
+    this.highlight = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = !online
+        ? AppColors.textGray.withValues(alpha: 0.60)
+        : highlight
+            ? AppColors.success
+            : AppColors.pureWhite;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 17,
+          style: GoogleFonts.rajdhani(
+            color: color,
+            fontSize: 24,
             fontWeight: FontWeight.w600,
+            height: 1,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.textGray,
-            fontSize: 9,
-            letterSpacing: 0.8,
+          style: GoogleFonts.rajdhani(
+            color: color.withValues(alpha: 0.90),
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+            height: 1,
           ),
         ),
       ],
@@ -250,31 +209,25 @@ class _TelemetryValue extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   final bool online;
 
-  const _StatusBadge({
-    required this.online,
-  });
+  const _StatusBadge({required this.online});
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        online ? AppColors.success : AppColors.textGray;
-
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ),
+      width: 74,
+      height: 28,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        color: online ? AppColors.success : AppColors.offlineBadge,
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        online ? 'ONLINE' : 'OFFLINE',
-        style: TextStyle(
-          color: color,
-          fontSize: 9,
+        online ? 'Online' : 'Offline',
+        style: GoogleFonts.inter(
+          color: online ? Colors.black : AppColors.textGray,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
+          height: 1,
         ),
       ),
     );
