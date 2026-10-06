@@ -2,8 +2,27 @@
 **STM32 航電驗證平台 × Flutter 地面站原型**  
 *A ground-based CubeSat avionics / FlatSat engineering demonstrator.*
 
-以 STM32F103C8T6 逐步驗證 LED、按鍵、有限狀態機（FSM）、USART1 事件日誌與警報輸出，並以 Flutter 製作地面站介面。這是桌上型教學與作品集專案；**目前沒有在軌衛星、實際 LoRa 鏈路或 STM32 到 Flutter 的遙測連線**。
+[📘 Tutorial](NOTION_URL) ·
+[🎞️ Presentation](FIGMA_URL) ·
+[🛰️ Firmware](#firmware-phases--韌體階段) ·
+[🖥️ Ground Station](#flutter-ground-station) ·
+[🗺️ Roadmap](#roadmap--後續方向)
 
+以 STM32F103C8T6 逐步驗證 LED、按鍵、有限狀態機（FSM）、USART1 事件日誌與警報輸出，並以 Flutter 製作地面站介面。這是桌上型教學與作品集專案；**目前沒有在軌衛星、實際 LoRa 鏈路或 STM32 到 Flutter 的遙測連線**。
+&nbsp;
+&nbsp;
+## Learning Resources / 實驗教材
+除了原始碼與硬體驗證流程之外，本專案亦整理了一套 **《立方衛星開發實務》實驗教程**，記錄各 Phase 的實作概念、操作流程與系統設計，適合搭配 Repository 內容閱讀。
+
+📘 **實驗教程 / Hands-on Tutorial**  
+[立方衛星開發實務 — CubeSat Avionics Verification Platform](https://app.notion.com/p/CubeSat-Avionics-Verification-Platform-3d24ffce9c76803eb9aae5cd3beb5cc8)
+
+🎞️ **線上簡報 / Interactive Presentation**  
+[DEJI CubeSat — Project Presentation](https://www.figma.com/proto/vbV4zKKOMBn7tcE5j3NPdd/DEJI-CubeSat?node-id=190-2738&t=gFOFCTlbmznq2yIt-0&scaling=scale-down-width&content-scaling=fixed&page-id=57%3A2&starting-point-node-id=190%3A2738)
+
+> The tutorial explains the development process phase by phase, while the presentation provides a visual overview of CubeSat architecture, communication concepts, avionics verification, and the project roadmap.
+
+&nbsp;&nbsp;
 ## 專案現況 / Project status
 
 | 項目 | 目前內容 | 狀態 |
@@ -17,7 +36,7 @@
 | 裝置連接、QR、LoRa、感測器 | 介面占位或後續構想 | 尚未整合 |
 
 「已寫入程式」不等於通過完整的硬體測試。Dashboard 的 `LIVE` 標籤目前僅為展示 UI。
-
+#
 ## System overview / 架構
 
 ```mermaid
@@ -29,7 +48,7 @@ flowchart LR
 ```
 
 兩條路徑目前各自運行：STM32 經 UART 印出事件；Flutter 以本機模擬資料顯示 Dashboard。尚無串流解析器或無線下行。
-
+#
 ## Hardware & pin map / 接線
 
 下表對應 Phase 1.3-B 和 1.4-A 的 **STM32F103C8T6 / Blue Pill** sketch。
@@ -49,7 +68,7 @@ flowchart LR
 UART 設為 **9600 baud, 8N1**。USB–TTL 需使用相容的 **3.3 V 邏輯位準**；不要將未確認耐壓的 GPIO 直接接 5 V TX。ST-LINK 可用於 SWD 燒錄；供電請按開發板規格選擇，避免多個電源輸出直接相接。
 
 **最小材料：** STM32F103C8T6、3 顆 LED 與各自的限流電阻、2 個按鈕、跳線、麵包板、USB–TTL。Phase 1.4 另需適用於該 GPIO 驅動方式的有源蜂鳴器。
-
+#
 ## Firmware phases / 韌體階段
 
 每個 `.ino` 是獨立 sketch，建議按順序驗證。
@@ -65,7 +84,7 @@ UART 設為 **9600 baud, 8N1**。USB–TTL 需使用相容的 **3.3 V 邏輯位�
 | 1.4-A | FSM、事件紀錄與蜂鳴器 | [Fault alarm](Phase1.4_Fault%20Alarm%20Output/1.4-A_FSM__USART1-Serial-Event-Log__Buzzer-Alarm/1.4-A_FSM__USART1-Serial-Event-Log__Buzzer-Alarm.ino) |
 
 歷史檔名寫 `Swith-Four-State`，但該 sketch 實際定義**五個狀態**，以下以程式內容為準。
-
+#
 ## FSM behavior / 狀態轉移
 
 Phase 1.4-A 啟動後三燈亮約一秒，再轉為 NOMINAL。輸入以 HIGH → LOW 邊緣判斷，因此按住按鍵不會持續觸發。
@@ -80,7 +99,7 @@ Phase 1.4-A 啟動後三燈亮約一秒，再轉為 NOMINAL。輸入以 HIGH →
 | RECOVERY | 經過 3 秒 | NOMINAL | 綠燈 |
 
 FAULT 在 NOMINAL 同時收到兩鍵事件時優先。現有程式**沒有 WARNING → NOMINAL 的直接轉移**。
-
+#
 ## Quick start / 快速開始
 
 ### STM32 firmware
@@ -123,7 +142,7 @@ flutter run
 - [ ] Phase 1.4-A：實測警報、ACK 靜音、3 秒恢復。
 - [ ] Flutter：展示畫面可進入、模擬數據每 2 秒變化。
 - [ ] MCU 到 App 的真實遙測封包（**尚未實作**）。
-
+#
 ## Roadmap / 後續方向
 
 1. **Sensors & power:** 溫濕度與電力感測、資料有效性檢查及故障注入。
@@ -131,7 +150,7 @@ flutter run
 3. **Ground-station integration:** serial/bridge 資料來源、實際連線狀態、告警與事件紀錄，並保留 mock 展示模式。
 4. **LoRa link:** 兩端模組、合法頻段配置、收發、RSSI、封包遺失與重傳測試。
 5. **Verification evidence:** 接線圖、BOM、實驗結果及可重現展示影片。
-
+#
 ## Known limitations / 已知限制
 
 - Phase 1.4 有蜂鳴器控制程式，但 repository 沒有其實體聲響測試證據；需核對有源元件、驅動能力與接法。
@@ -139,7 +158,7 @@ flutter run
 - Phase 1.2-B 未按鍵的 `else` 分支目前也亮紅燈，作為獨立展示前應先修正；FSM 示範請用 1.3-B 或 1.4-A。
 - Flutter 的狀態、RSSI、姿態、電壓和封包數是模擬資料；目前沒有實際 MCU、LoRa 或衛星連線。
 - 本專案未提供飛行資格、環境測試或無線鏈路驗證結果。
-
+#
 ## Author
 
 **Deji Liu（劉永鈞）** · [@JeremyLiu9453](https://github.com/JeremyLiu9453)
