@@ -2,8 +2,6 @@
 **STM32 航電驗證平台 × Flutter 地面站原型**  
 *A ground-based CubeSat avionics / FlatSat engineering demonstrator.*
 
-[📘 Tutorial](https://app.notion.com/p/CubeSat-Avionics-Verification-Platform-3d24ffce9c76803eb9aae5cd3beb5cc8) ·
-[🎞️ Presentation](https://www.figma.com/proto/vbV4zKKOMBn7tcE5j3NPdd/DEJI-CubeSat?node-id=190-2738&t=gFOFCTlbmznq2yIt-0&scaling=scale-down-width&content-scaling=fixed&page-id=57%3A2&starting-point-node-id=190%3A2738) ·
 [🛰️ Firmware](#firmware-phases--韌體階段) ·
 [🖥️ Ground Station](#flutter-ground-station) ·
 [🗺️ Roadmap](#roadmap--後續方向)
